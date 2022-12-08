@@ -14,6 +14,8 @@ namespace xlsb_to_xlsx
         [STAThread]
         static void Main()
         {
+            AsposeLicenseHelper.SetCellLicense();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

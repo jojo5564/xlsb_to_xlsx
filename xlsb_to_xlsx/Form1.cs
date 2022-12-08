@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -10,17 +11,21 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Aspose.Cells;
 
+
 namespace xlsb_to_xlsx
 {
     public partial class Form1 : Form
     {
+        private string Path = "";
+
         public Form1()
         {
             InitializeComponent();
         }
-
+        
         private void button1_Click(object sender, EventArgs e)
         {
+            this.Enabled = false;
             listBox1.Items.Clear();
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Multiselect = true;
@@ -28,8 +33,19 @@ namespace xlsb_to_xlsx
             dialog.Filter = "*.xlsb|*.xlsb";
             string[] files;
 
+
             if (dialog.ShowDialog() == DialogResult.OK)
             {
+                FolderBrowserDialog savedialog = new FolderBrowserDialog();
+                savedialog.ShowDialog();
+                Path = savedialog.SelectedPath;
+
+                if(Path == "")
+                {
+                    this.Enabled = true;
+                    return;
+                }
+
                 files = dialog.FileNames;
                 listBox1.Items.Add("Total : " + files.Length + " files");
                 foreach (var file in files)
@@ -42,7 +58,7 @@ namespace xlsb_to_xlsx
                         while (t1.ThreadState == ThreadState.Running)
                         {
                             this.Update();
-                            Thread.Sleep(100);
+                            Thread.Sleep(1);
                         }
                     }
                     catch (Exception ex)
@@ -52,6 +68,8 @@ namespace xlsb_to_xlsx
                 }
                 listBox1.Items.Add("succeed");
             }
+            this.Enabled = true;
+
         }
 
         private void Convert(object objs)
@@ -59,7 +77,8 @@ namespace xlsb_to_xlsx
             string file = (String)objs;
             var workbook = new Workbook(file);
             string newFileName = file.Split(new[] { ".xlsb" }, StringSplitOptions.None)[0] + ".xlsx";
-            workbook.Save(newFileName);
+            workbook.Save(Path + '\\' + newFileName.Split('\\').Last());
         }
+
     }
 }
